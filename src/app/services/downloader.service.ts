@@ -16,13 +16,15 @@ export class DownloaderService {
   ) {}
 
   onSaveAsZip(fileUrls: string[]): Observable<any> {
+    if (!Array.isArray(fileUrls)) {
+      return throwError('argument must be array');
+    }
+
     if (
-      !Array.isArray(fileUrls) ||
-      fileUrls.length < 1 ||
+      fileUrls.length >= 1 &&
       !fileUrls.every((url) => typeof url === 'string')
     ) {
-      console.error('string array with file urls required');
-      return throwError('string array with file urls required');
+      return throwError('array must be of type string with file urls');
     }
 
     return combineLatest(
@@ -32,7 +34,9 @@ export class DownloaderService {
         let zip: JSZip = new JSZip();
 
         res.forEach((blob, i) => {
-          zip.file(`${i + 1}.${blob.type.split('/')[1]}`, blob);
+          const { type } = blob;
+          const [fileType, fileExtension] = type.split('/');
+          zip.file(`${i + 1}.${fileExtension}`, blob);
         });
 
         return from(zip.generateAsync({ type: 'blob' })).pipe(
