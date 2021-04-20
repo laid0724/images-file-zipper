@@ -20,7 +20,7 @@ export class DownloaderService {
     private fileSaverService: FileSaverService
   ) {}
 
-  onSaveAsZip(fileUrls: string[]): Observable<any> {
+  onSaveAsZip(fileUrls: string[]): Observable<Blob> {
     if (!Array.isArray(fileUrls)) {
       return throwError('argument must be array');
     }
